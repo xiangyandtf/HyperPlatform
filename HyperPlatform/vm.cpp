@@ -142,11 +142,11 @@ inline ULONG GetSegmentLimit(_In_ ULONG selector) {
 // Checks if a VMM can be installed, and so, installs it
 _Use_decl_annotations_ NTSTATUS VmInitialization() {
   PAGED_CODE()
-
+    // 测试HyperPlat是否已经安装
   if (VmpIsHyperPlatformInstalled()) {
     return STATUS_CANCELLED;
   }
-
+  // 测试Vmx是否可用
   if (!VmpIsVmxAvailable()) {
     return STATUS_HV_FEATURE_UNAVAILABLE;
   }
@@ -172,7 +172,7 @@ _Use_decl_annotations_ NTSTATUS VmInitialization() {
 _Use_decl_annotations_ static bool VmpIsVmxAvailable() {
   PAGED_CODE()
 
-  // See: DISCOVERING SUPPORT FOR VMX
+  // See: DISCOVERING SUPPORT FOR VMX (发现对 VMX 的支持)
   // If CPUID.1:ECX.VMX[bit 5]=1, then VMX operation is supported.
   int cpu_info[4] = {};
   __cpuid(cpu_info, 1);
@@ -270,25 +270,30 @@ _Use_decl_annotations_ static void *VmpBuildMsrBitmap() {
   PAGED_CODE()
 
   const auto msr_bitmap =
-      ExAllocatePoolZero(NonPagedPool, PAGE_SIZE, kHyperPlatformCommonPoolTag);
+      ExAllocatePoolZero(NonPagedPool, PAGE_SIZE, kHyperPlatformCommonPoolTag);//申请4096空间
   if (!msr_bitmap) {
     return nullptr;
   }
   RtlZeroMemory(msr_bitmap, PAGE_SIZE);
 
-  // Activate VM-exit for RDMSR against all MSRs
+  // Activate VM-exit for RDMSR against all MSRs :针对所有 MSR 激活 RDMSR 的虚拟机退出
   const auto bitmap_read_low = static_cast<UCHAR *>(msr_bitmap);
   const auto bitmap_read_high = bitmap_read_low + 1024;
+  //__debugbreak();
+  // 初始化所有读msr操作都会导致VM Exit
   RtlFillMemory(bitmap_read_low, 1024, 0xff);   // read        0 -     1fff
-  RtlFillMemory(bitmap_read_high, 1024, 0xff);  // read c0000000 - c0001fff
+  RtlFillMemory(bitmap_read_high, 1024, 0xff);  // read c0000000 - c0001fff 见手册25.6.9 MSR-Bitmap Address
 
-  // Ignore IA32_MPERF (000000e7) and IA32_APERF (000000e8)
+  // Ignore IA32_MPERF (000000e7)(TSC 频率时钟计数器（R/W 写清除 清零）) and IA32_APERF (000000e8)(实际性能时钟计数器（R/W 写入清除）)
+  // 初始化位图结构 
   RTL_BITMAP bitmap_read_low_header = {};
   RtlInitializeBitMap(&bitmap_read_low_header,
                       reinterpret_cast<PULONG>(bitmap_read_low), 1024 * 8);
+  // 清空 0xe7 和 0xe8
   RtlClearBits(&bitmap_read_low_header, 0xe7, 2);
 
   // Checks MSRs that cause #GP from 0 to 0xfff, and ignore all of them
+  // 试着读取每个msr,如果发生异常，就清空对应位防止#GP（一般性保护错误)
   for (auto msr = 0ul; msr < 0x1000; ++msr) {
     __try {
       UtilReadMsr(static_cast<Msr>(msr));
@@ -298,8 +303,8 @@ _Use_decl_annotations_ static void *VmpBuildMsrBitmap() {
       RtlClearBits(&bitmap_read_low_header, msr, 1);
     }
   }
-
-  // Ignore IA32_GS_BASE (c0000101) and IA32_KERNEL_GS_BASE (c0000102)
+  // 然后处理高位MSR
+  // Ignore IA32_GS_BASE (c0000101)(GS 的基址映射（R/W）) and IA32_KERNEL_GS_BASE (c0000102)(GS 基准地址的交换目标（R/W）)
   RTL_BITMAP bitmap_read_high_header = {};
   RtlInitializeBitMap(&bitmap_read_high_header,
                       reinterpret_cast<PULONG>(bitmap_read_high),
@@ -1021,7 +1026,7 @@ _Use_decl_annotations_ static void VmpFreeSharedData(
   ExFreePoolWithTag(processor_data->shared_data, kHyperPlatformCommonPoolTag);
 }
 
-// Tests if HyperPlatform is already installed
+// 测试是否已安装 HyperPlatform
 _Use_decl_annotations_ static bool VmpIsHyperPlatformInstalled() {
   PAGED_CODE()
 

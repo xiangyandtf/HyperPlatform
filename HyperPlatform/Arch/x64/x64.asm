@@ -31,7 +31,7 @@ MACHINE_FRAME_SIZE          EQU     28h
 ; macros
 ;
 
-; Saves all general purpose registers to the stack
+; Saves all general purpose registers to the stack 将所有通用寄存器保存到堆栈中
 PUSHAQ MACRO
     push    rax
     push    rcx

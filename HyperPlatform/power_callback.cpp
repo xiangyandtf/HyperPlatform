@@ -87,7 +87,7 @@ _Use_decl_annotations_ void PowerCallbackTermination() {
   }
 }
 
-// Power callback routine dealing with hibernate and sleep
+// 处理休眠和睡眠的电源回调例程
 _Use_decl_annotations_ static void PowerCallbackpCallbackRoutine(
     PVOID callback_context, PVOID argument1, PVOID argument2) {
   UNREFERENCED_PARAMETER(callback_context);
