@@ -189,7 +189,7 @@ _Use_decl_annotations_ ULONG64 EptGetEptPointer(EptData *ept_data) {
   return ept_data->ept_pointer.all;
 }
 
-// Reads and stores all MTRRs to set a correct memory type for EPT
+// Reads and stores all MTRRs to set a correct memory type for EPT  读取并存储所有 MTRR，为 EPT 设置正确的内存类型
 _Use_decl_annotations_ void EptInitializeMtrrEntries() {
   PAGED_CODE()
 

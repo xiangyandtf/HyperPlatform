@@ -150,7 +150,7 @@ _Use_decl_annotations_ NTSTATUS VmInitialization() {
   if (!VmpIsVmxAvailable()) {
     return STATUS_HV_FEATURE_UNAVAILABLE;
   }
-
+  // 内部设置了msr和io位图
   const auto shared_data = VmpInitializeSharedData();
   if (!shared_data) {
     return STATUS_MEMORY_NOT_ALLOCATED;
@@ -318,7 +318,8 @@ _Use_decl_annotations_ static void *VmpBuildMsrBitmap() {
 _Use_decl_annotations_ static UCHAR *VmpBuildIoBitmaps() {
   PAGED_CODE()
 
-  // Allocate two IO bitmaps as one contiguous 4K+4K page
+  // Allocate two IO bitmaps as one contiguous 4K+4K page 设置IO位图，当访问0x0000~0xFFFF的端口时，如果对应位为1则VM exit.
+  // 4096 Byte * 8 = 32,768 bit = 0x8000 bit
   const auto io_bitmaps = static_cast<UCHAR *>(ExAllocatePoolZero(
       NonPagedPool, PAGE_SIZE * 2, kHyperPlatformCommonPoolTag));
   if (!io_bitmaps) {
@@ -334,7 +335,7 @@ _Use_decl_annotations_ static UCHAR *VmpBuildIoBitmaps() {
   RTL_BITMAP bitmap_a_header = {};
   RtlInitializeBitMap(&bitmap_a_header, reinterpret_cast<PULONG>(io_bitmap_a),
                       PAGE_SIZE * CHAR_BIT);
-  // RtlSetBits(&bitmap_a_header, 0x10, 0x2000);
+  // RtlSetBits(&bitmap_a_header, 0x10, 0x2000); // 0x10设置位起始索引，要设置的位数
 
   RTL_BITMAP bitmap_b_header = {};
   RtlInitializeBitMap(&bitmap_b_header, reinterpret_cast<PULONG>(io_bitmap_b),
