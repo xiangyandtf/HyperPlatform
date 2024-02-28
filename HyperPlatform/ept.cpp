@@ -56,11 +56,11 @@ static const auto kEptpNumOfMaxVariableRangeMtrrs = 255;
 
 // Architecture defined number of fixed range MTRRs. 1 register for 64k, 2
 // registers for 16k, 8 registers for 4k, and each register has 8 ranges as per
-// "Fixed Range MTRRs" states.
+// "Fixed Range MTRRs" states. 架构定义的固定范围 MTRR 数量。64k 为 1 个寄存器，16k 为 2 个寄存器，4k 为 8 个寄存器，根据 "固定范围 MTRR "的规定，每个寄存器有 8 个范围。
 static const auto kEptpNumOfFixedRangeMtrrs =
     (1 + 2 + 8) * RTL_NUMBER_OF_FIELD(Ia32MtrrFixedRangeMsr, fields.types);
 
-// A size of array to store all possible MTRRs
+// A size of array to store all possible MTRRs，总的MTRR数量=固定MTRR+可变MTRR
 static const auto kEptpMtrrEntriesSize =
     kEptpNumOfMaxVariableRangeMtrrs + kEptpNumOfFixedRangeMtrrs;
 
@@ -230,8 +230,9 @@ _Use_decl_annotations_ void EptInitializeMtrrEntries() {
     ULONG64 offset = 0;
     Ia32MtrrFixedRangeMsr fixed_range = {
         UtilReadMsr64(Msr::kIa32MtrrFix64k00000)};
+    // 每个memory_type是IA32_MTRR_FIX64K_00000中的8bit, 代表每64KByte字节内存类型
     for (auto memory_type : fixed_range.fields.types) {
-      // Each entry manages 64k (0x10000) length.
+      // Each entry manages 64k (0x10000) length. 每个entry项管理64KB(0x10000)内存大小
       ULONG64 base = k64kBase + offset;
       offset += k64kManagedSize;
 
@@ -308,23 +309,24 @@ _Use_decl_annotations_ void EptInitializeMtrrEntries() {
     NT_ASSERT(k4kBase + offset == 0x100000);
   }
 
-  // Read all variable range MTRRs 然后处理可变范围 MTRRs
+  // Read all variable range MTRRs 然后处理可变范围 MTRRs, 根据读取IA32_MTRRCAP[7:0]给出的可变范围MTRRs数量判断循环次数
   for (ULONG64 i = 0; i < mtrr_capabilities.fields.variable_range_count; i++) {
     // Read MTRR mask and check if it is in use
-    const auto phy_mask = static_cast<ULONG>(Msr::kIa32MtrrPhysMaskN) + i * 2;
+    // 计算对应序号掩码控制寄存器编码
+    const auto phy_mask = static_cast<ULONG>(Msr::kIa32MtrrPhysMaskN) + i * 2; //IA32_MTRR_PHYSBASE0和IA32_MTRR_PHYSMASK0分别从0x200和0x201开始交叉排列，所以加i*2是下一个序号
     Ia32MtrrPhysMaskMsr mtrr_mask = {UtilReadMsr64(static_cast<Msr>(phy_mask))};
     if (!mtrr_mask.fields.valid) {
       continue;
     }
 
     // Get a length this MTRR manages
-    ULONG length;
-    BitScanForward64(&length, mtrr_mask.fields.phys_mask * PAGE_SIZE);
+    ULONG length;// 这个长度不是指内存范围，而是掩码有效位数，后面通过1左移该长度获得内存范围
+    BitScanForward64(&length, mtrr_mask.fields.phys_mask * PAGE_SIZE); //掩码是页对齐的,低12位固定为0不在寄存器值中体现，所以乘以PAGE_SIZE。
 
     // Read MTRR base and calculate a range this MTRR manages
     const auto phy_base = static_cast<ULONG>(Msr::kIa32MtrrPhysBaseN) + i * 2;
     Ia32MtrrPhysBaseMsr mtrr_base = {UtilReadMsr64(static_cast<Msr>(phy_base))};
-    ULONG64 base = mtrr_base.fields.phys_base * PAGE_SIZE;
+    ULONG64 base = mtrr_base.fields.phys_base * PAGE_SIZE;// 基地址同掩码页对齐，低12位不体现
     ULONG64 end = base + (1ull << length) - 1;
 
     // Save it

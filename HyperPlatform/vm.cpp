@@ -156,7 +156,7 @@ _Use_decl_annotations_ NTSTATUS VmInitialization() {
     return STATUS_MEMORY_NOT_ALLOCATED;
   }
 
-  // Read and store all MTRRs to set a correct memory type for EPT
+  // Read and store all MTRRs to set a correct memory type for EPT，保存MTRR中对内存类型的配置到ept.cpp的MtrrData g_eptp_mtrr_entries全局变量中
   EptInitializeMtrrEntries();
 
   // Virtualize all processors
@@ -360,7 +360,7 @@ _Use_decl_annotations_ static NTSTATUS VmpStartVm(void *context) {
 }
 
 // Allocates structures for virtualization, initializes VMCS and virtualizes
-// the current processor
+// the current processor 为虚拟化分配结构，初始化 VMCS 并虚拟化当前处理器
 _Use_decl_annotations_ static void VmpInitializeVm(
     ULONG_PTR guest_stack_pointer, ULONG_PTR guest_instruction_pointer,
     void *context) {

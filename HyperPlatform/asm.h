@@ -31,10 +31,10 @@ extern "C" {
 // prototypes
 //
 
-/// A wrapper for vm_initialization_routine.
-/// @param vm_initialization_routine  A function pointer for entering VMX-mode
-/// @param context  A context parameter for vm_initialization_routine
-/// @return true if vm_initialization_routine was successfully executed
+/// A wrapper for vm_initialization_routine. 的封装器
+/// @param vm_initialization_routine  A function pointer for entering VMX-mode 进入 VMX 模式的函数指针
+/// @param context  A context parameter for vm_initialization_routine 的上下文参数
+/// @return true if vm_initialization_routine was successfully executed 成功执行，则返回 true
 bool __stdcall AsmInitializeVm(
     _In_ void (*vm_initialization_routine)(_In_ ULONG_PTR, _In_ ULONG_PTR,
                                            _In_opt_ void *),

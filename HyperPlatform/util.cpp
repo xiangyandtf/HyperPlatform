@@ -434,6 +434,8 @@ UtilGetPhysicalMemoryRanges() {
 // STATUS_SUCCESS when all callback returned STATUS_SUCCESS as well. When
 // one of callbacks returns anything but STATUS_SUCCESS, this function stops
 // to call remaining callbacks and returns the value.
+// 在 PASSIVE_LEVEL 中的所有处理器上执行给定的回调例程。如果所有回调也返回 STATUS_SUCCESS，则返回 STATUS_SUCCESS。
+// 如果其中一个回调函数只返回 STATUS_SUCCESS，则该函数停止调用其余回调函数并返回值。
 _Use_decl_annotations_ NTSTATUS
 UtilForEachProcessor(NTSTATUS (*callback_routine)(void *), void *context) {
   PAGED_CODE()
@@ -454,11 +456,12 @@ UtilForEachProcessor(NTSTATUS (*callback_routine)(void *), void *context) {
     affinity.Group = processor_number.Group;
     affinity.Mask = 1ull << processor_number.Number;
     GROUP_AFFINITY previous_affinity = {};
+    // 更改处理器的线程组相关性
     KeSetSystemGroupAffinityThread(&affinity, &previous_affinity);
 
-    // Execute callback
+    // Execute callback,在每个激活处理器上调用回调函数
     status = callback_routine(context);
-
+    // 还原处理器的线程组相关性
     KeRevertToUserGroupAffinityThread(&previous_affinity);
     if (!NT_SUCCESS(status)) {
       return status;
