@@ -211,14 +211,14 @@ _Use_decl_annotations_ void EptInitializeMtrrEntries() {
       mtrr_capabilities.fields.fixed_range_supported,
       default_type.fields.fixed_mtrrs_enabled);
 
-  // Read fixed range MTRRs if supported
+  // Read fixed range MTRRs if supported 判断如果启用了固定范围MTRR
   if (mtrr_capabilities.fields.fixed_range_supported &&
       default_type.fields.fixed_mtrrs_enabled) {
-    static const auto k64kBase = 0x0;
+    static const auto k64kBase = 0x0; //IA32_MTRR_FIX64K_00000 映射从0H-7FFFFH这512KByte的地址范围，这个范围被分成8个64KByte子范围。
     static const auto k64kManagedSize = 0x10000;
-    static const auto k16kBase = 0x80000;
+    static const auto k16kBase = 0x80000;//IA32_MTRR_FIX16K_80000和IA32_MTRR_FIX16K_A0000 映射两个128KByte的地址范围，从80000H到BFFFFH。此范围被分成16个16KByte子范围，每个寄存器有8个地址范围。
     static const auto k16kManagedSize = 0x4000;
-    static const auto k4kBase = 0xC0000;
+    static const auto k4kBase = 0xC0000;//IA32_MTRR_FIX4K_C0000到IA32_MTRR_FIX4K_F8000， 映射从C0000H-FFFFFH之间的8个32KByte地址范围。此范围被分成64个4KByte子范围，每个寄存器有8个地址范围。
     static const auto k4kManagedSize = 0x1000;
 
     // The kIa32MtrrFix64k00000 manages 8 ranges of memory. The first range
@@ -308,7 +308,7 @@ _Use_decl_annotations_ void EptInitializeMtrrEntries() {
     NT_ASSERT(k4kBase + offset == 0x100000);
   }
 
-  // Read all variable range MTRRs
+  // Read all variable range MTRRs 然后处理可变范围 MTRRs
   for (ULONG64 i = 0; i < mtrr_capabilities.fields.variable_range_count; i++) {
     // Read MTRR mask and check if it is in use
     const auto phy_mask = static_cast<ULONG>(Msr::kIa32MtrrPhysMaskN) + i * 2;
