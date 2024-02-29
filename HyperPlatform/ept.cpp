@@ -87,8 +87,8 @@ struct EptData {
   EptPointer ept_pointer;
   EptCommonEntry *ept_pml4;
 
-  EptCommonEntry **preallocated_entries;  // An array of pre-allocated entries
-  volatile long preallocated_entries_count;  // # of used pre-allocated entries
+  EptCommonEntry **preallocated_entries;  // An array of pre-allocated entries 预分配条目的数组
+  volatile long preallocated_entries_count;  // # of used pre-allocated entries 已使用的预分配条目
 };
 
 ////////////////////////////////////////////////////////////////////////////////

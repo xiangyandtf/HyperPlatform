@@ -31,10 +31,10 @@ extern "C" {
 // prototypes
 //
 
-/// A wrapper for vm_initialization_routine. µÄ·â×°Æ÷
-/// @param vm_initialization_routine  A function pointer for entering VMX-mode ½øÈë VMX Ä£Ê½µÄº¯ÊıÖ¸Õë
-/// @param context  A context parameter for vm_initialization_routine µÄÉÏÏÂÎÄ²ÎÊı
-/// @return true if vm_initialization_routine was successfully executed ³É¹¦Ö´ĞĞ£¬Ôò·µ»Ø true
+/// A wrapper for vm_initialization_routine. çš„å°è£…å™¨
+/// @param vm_initialization_routine  A function pointer for entering VMX-mode è¿›å…¥ VMX æ¨¡å¼çš„å‡½æ•°æŒ‡é’ˆ
+/// @param context  A context parameter for vm_initialization_routine çš„ä¸Šä¸‹æ–‡å‚æ•°
+/// @return true if vm_initialization_routine was successfully executed æˆåŠŸæ‰§è¡Œï¼Œåˆ™è¿”å› true
 bool __stdcall AsmInitializeVm(
     _In_ void (*vm_initialization_routine)(_In_ ULONG_PTR, _In_ ULONG_PTR,
                                            _In_opt_ void *),

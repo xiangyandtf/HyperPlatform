@@ -379,7 +379,7 @@ _Use_decl_annotations_ static void VmpInitializeVm(
   }
   RtlZeroMemory(processor_data, sizeof(ProcessorData));
   processor_data->shared_data = shared_data;
-  InterlockedIncrement(&processor_data->shared_data->reference_count);
+  InterlockedIncrement(&processor_data->shared_data->reference_count);// 引用数量原子加1
 
   // Set up EPT
   processor_data->ept_data = EptInitialization();
