@@ -339,13 +339,14 @@ _Use_decl_annotations_ void EptInitializeMtrrEntries() {
   }
 }
 
-// Returns a memory type based on MTRRs
+// Returns a memory type based on MTRRs 根据 MTRR 返回内存类型
 _Use_decl_annotations_ static memory_type EptpGetMemoryType(
     ULONG64 physical_address) {
   // Indicate that MTRR is not defined (as a default)
   UCHAR result_type = MAXUCHAR;
 
   // Looks for MTRR that includes the specified physical_address
+  // 查找包含指定物理地址的 MTRR
   for (const auto &mtrr_entry : g_eptp_mtrr_entries) {
     if (!mtrr_entry.enabled) {
       // Reached out the end of stored MTRRs
@@ -379,6 +380,7 @@ _Use_decl_annotations_ static memory_type EptpGetMemoryType(
         // one is WT and the other one is WB, use WT. However, look for other
         // MTRRs, as the other MTRR specifies the memory address as UC, which is
         // priority.
+        // 多个MTRR命中时组合属性
         result_type = static_cast<UCHAR>(memory_type::kWriteThrough);
         continue;
       }
@@ -428,6 +430,7 @@ _Use_decl_annotations_ EptData *EptInitialization() {
 
   // Initialize all EPT entries for all physical memory pages
   const auto pm_ranges = UtilGetPhysicalMemoryRanges();
+  //__debugbreak();
   for (auto run_index = 0ul; run_index < pm_ranges->number_of_runs;
        ++run_index) {
     const auto run = &pm_ranges->run[run_index];
@@ -487,7 +490,8 @@ _Use_decl_annotations_ EptData *EptInitialization() {
 }
 
 // Allocate and initialize all EPT entries associated with the physical_address
-_Use_decl_annotations_ static EptCommonEntry *EptpConstructTables(
+// 分配并初始化与物理地址相关的所有 EPT 条目
+    _Use_decl_annotations_ static EptCommonEntry *EptpConstructTables(
     EptCommonEntry *table, ULONG table_level, ULONG64 physical_address,
     EptData *ept_data) {
   switch (table_level) {

@@ -193,6 +193,7 @@ UtilInitialization(PDRIVER_OBJECT driver_object) {
 }
 
 // Terminates utility functions
+//终止效用函数
 _Use_decl_annotations_ void UtilTermination() {
   PAGED_CODE()
 
@@ -346,6 +347,7 @@ _Use_decl_annotations_ void *UtilPcToFileHeader(void *pc_value) {
 }
 
 // Initializes the physical memory ranges
+// 初始化物理内存范围
 _Use_decl_annotations_ static NTSTATUS UtilpInitializePhysicalMemoryRanges() {
   PAGED_CODE()
 
@@ -372,6 +374,7 @@ _Use_decl_annotations_ static NTSTATUS UtilpInitializePhysicalMemoryRanges() {
 }
 
 // Builds the physical memory ranges
+// 建立物理内存范围
 _Use_decl_annotations_ static PhysicalMemoryDescriptor *
 UtilpBuildPhysicalMemoryRanges() {
   PAGED_CODE()

@@ -25,7 +25,7 @@
 // types
 //
 
-/// Represents VMM related data shared across all processors
+/// Represents VMM related data shared across all processors 代表所有处理器共享的 VMM 相关数据
 struct SharedProcessorData {
   volatile long reference_count;  //!< Number of processors sharing this data 该数据被引用数量，应该是释放内存判断条件
   void* msr_bitmap;               //!< Bitmap to activate MSR I/O VM-exit
@@ -33,7 +33,7 @@ struct SharedProcessorData {
   void* io_bitmap_b;              //!< Bitmap to activate IO VM-exit (~ 0xffff)
 };
 
-/// Represents VMM related data associated with each processor
+/// Represents VMM related data associated with each processor 代表与每个处理器相关的 VMM 相关数据
 struct ProcessorData {
   SharedProcessorData* shared_data;         //!< Shared data
   void* vmm_stack_limit;                    //!< A head of VA for VMM stack

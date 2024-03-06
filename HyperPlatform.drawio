@@ -1,0 +1,70 @@
+<mxfile host="Electron" modified="2024-03-06T14:30:56.617Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="HKBLUZS5bU8pZROINyOR" version="23.1.5" type="device">
+  <diagram name="第 1 页" id="ludKRuueVij8K4QDPVP4">
+    <mxGraphModel dx="1925" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-2" value="&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;struct SharedProcessorData {&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp; volatile long reference_count;&amp;nbsp; // 该数据被引用数量，应该是释放内存判断条件&lt;/span&gt;&lt;/div&gt;&amp;nbsp; void* msr_bitmap;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; Bitmap to activate MSR I/O VM-exit&lt;br&gt;&amp;nbsp; void* io_bitmap_a;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; Bitmap to activate IO VM-exit (~ 0x7FFF)&lt;br&gt;&amp;nbsp; void* io_bitmap_b;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; Bitmap to activate IO VM-exit (~ 0xffff)&lt;br&gt;};" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="460" y="100" width="460" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-5" value="struct ProcessorData {&lt;br&gt;&amp;nbsp; SharedProcessorData* shared_data;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; Shared data&lt;br&gt;&amp;nbsp; void* vmm_stack_limit;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; A head of VA for VMM stack&lt;br&gt;&amp;nbsp; struct VmControlStructure* vmxon_region;&amp;nbsp; //!&amp;lt; VA of a VMXON region&lt;br&gt;&amp;nbsp; struct VmControlStructure* vmcs_region;&amp;nbsp; &amp;nbsp;//!&amp;lt; VA of a VMCS region&lt;br&gt;&amp;nbsp; struct EptData* ept_data;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; A pointer to EPT related data&lt;br&gt;};" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="-30" y="190" width="400" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-7" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=-0.004;entryY=0.121;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tk5wVR1Ve6Km2IjSrzzK-5" target="tk5wVR1Ve6Km2IjSrzzK-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="370" y="260" as="sourcePoint" />
+            <mxPoint x="440" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-8" value="struct VmControlStructure {&lt;br&gt;&amp;nbsp; unsigned long revision_identifier;&lt;br&gt;&amp;nbsp; unsigned long vmx_abort_indicator;&lt;br&gt;&amp;nbsp; unsigned long data[1];&amp;nbsp; //!&amp;lt; Implementation-specific format.&lt;br&gt;};" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="460" y="270" width="260" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-9" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="tk5wVR1Ve6Km2IjSrzzK-5" target="tk5wVR1Ve6Km2IjSrzzK-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="410" y="320" as="sourcePoint" />
+            <mxPoint x="460" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-10" value="init函数:ept.cpp&amp;nbsp;EptInitialization&lt;br&gt;struct EptData {&lt;br&gt;&amp;nbsp; EptPointer ept_pointer;&lt;br&gt;&amp;nbsp; EptCommonEntry *ept_pml4;&lt;br&gt;&amp;nbsp; EptCommonEntry **preallocated_entries;&amp;nbsp; //&amp;nbsp; 预分配条目的数组&lt;br&gt;&amp;nbsp; volatile long preallocated_entries_count;&amp;nbsp; //&amp;nbsp; 已使用的预分配条目&lt;br&gt;};" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="460" y="400" width="360" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.814;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="tk5wVR1Ve6Km2IjSrzzK-5" target="tk5wVR1Ve6Km2IjSrzzK-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="550" as="sourcePoint" />
+            <mxPoint x="430" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-12" value="&lt;div&gt;union EptPointer {&lt;/div&gt;&lt;div&gt;&amp;nbsp; ULONG64 all;&lt;/div&gt;&lt;div&gt;&amp;nbsp; struct {&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 memory_type : 3;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; [0:2]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 page_walk_length : 3;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; [3:5]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 enable_accessed_and_dirty_flags : 1;&amp;nbsp; //!&amp;lt; [6]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 reserved1 : 5;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; [7:11]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 pml4_address : 36;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; [12:48-1]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 reserved2 : 16;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; [48:63]&lt;/div&gt;&lt;div&gt;&amp;nbsp; } fields;&lt;/div&gt;&lt;div&gt;};&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="920" y="370" width="370" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-13" value="" style="endArrow=classic;html=1;rounded=0;exitX=1.003;exitY=0.1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="tk5wVR1Ve6Km2IjSrzzK-10" target="tk5wVR1Ve6Km2IjSrzzK-12">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="580" as="sourcePoint" />
+            <mxPoint x="870" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-14" value="&lt;div&gt;union EptCommonEntry {&lt;/div&gt;&lt;div&gt;&amp;nbsp; ULONG64 all;&lt;/div&gt;&lt;div&gt;&amp;nbsp; struct {&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 read_access : 1;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; [0]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 write_access : 1;&amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; [1]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 execute_access : 1;&amp;nbsp; &amp;nbsp; //!&amp;lt; [2]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 memory_type : 3;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; [3:5]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 reserved1 : 6;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; [6:11]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 physial_address : 36;&amp;nbsp; //!&amp;lt; [12:48-1]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; ULONG64 reserved2 : 16;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; [48:63]&lt;/div&gt;&lt;div&gt;&amp;nbsp; } fields;&lt;/div&gt;&lt;div&gt;};&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="920" y="560" width="350" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=-0.011;entryY=0.2;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="tk5wVR1Ve6Km2IjSrzzK-10" target="tk5wVR1Ve6Km2IjSrzzK-14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="830" y="570" as="sourcePoint" />
+            <mxPoint x="880" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-16" value="&lt;div&gt;struct MtrrData {&lt;/div&gt;&lt;div&gt;&amp;nbsp; bool enabled;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; Whether this entry is valid&lt;/div&gt;&lt;div&gt;&amp;nbsp; bool fixedMtrr;&amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; Whether this entry manages a fixed range MTRR&lt;/div&gt;&lt;div&gt;&amp;nbsp; UCHAR type;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; //!&amp;lt; Memory Type (such as WB, UC)&lt;/div&gt;&lt;div&gt;&amp;nbsp; bool reserverd1;&amp;nbsp; &amp;nbsp; &amp;nbsp;//!&amp;lt; Padding&lt;/div&gt;&lt;div&gt;&amp;nbsp; ULONG reserverd2;&amp;nbsp; &amp;nbsp; //!&amp;lt; Padding&lt;/div&gt;&lt;div&gt;&amp;nbsp; ULONG64 range_base;&amp;nbsp; //!&amp;lt; A base address of a range managed by this entry&lt;/div&gt;&lt;div&gt;&amp;nbsp; ULONG64 range_end;&amp;nbsp; &amp;nbsp;//!&amp;lt; An end address of a range managed by this entry&lt;/div&gt;&lt;div&gt;};&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="430" y="850" width="290" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-17" value="g_eptp_mtrr_entries[kEptpMtrrEntriesSize]" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="900" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tk5wVR1Ve6Km2IjSrzzK-18" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" edge="1" parent="1" source="tk5wVR1Ve6Km2IjSrzzK-17" target="tk5wVR1Ve6Km2IjSrzzK-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="290" y="940" as="sourcePoint" />
+            <mxPoint x="340" y="890" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
